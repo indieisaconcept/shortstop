@@ -198,9 +198,9 @@ describe('shortstop', function () {
                 foo: 'bar',
                 foobar: false,
                 chained: 'foo:bar|bar:buzz',
-                file: 'foo:bar|bar:buzz|file:'+ __filename,
+                file: 'foo:bar|bar:buzz|file:' + __filename,
                 delimiter: 'foo:bar||bar:buzz',
-                ignored: 'foo|:bar||bar:|buzz|file:'+ __filename
+                ignored: 'foo|:bar||bar:|buzz|file:' + __filename
             };
 
             expected = {
@@ -249,6 +249,35 @@ describe('shortstop', function () {
             // ensure protocol chains must start with a protocol
             assert.isString(out.ignored);
             assert.strictEqual(out.ignored, expected.ignored);
+        });
+
+        it('should handle protocol filters', function () {
+            var out, data, resolver, expected, concat;
+
+            concat = function (value, previous) {
+                return (previous && previous + ' ' || '') + this.protocol;
+            };
+
+            resolver = shortstop.create();
+
+            data = {
+                http: 'http://www.domain.com',
+                https: 'https://www.domain.com.au',
+                chain: 'http://www.domain.com.au|https://www.domain.com.au',
+                file: 'testing:path/to/some/file',
+                chainAlias: 'https:a|testing:b'
+            };
+
+            resolver.use('http', '^(https?):', concat); // regex filter
+            resolver.use('test', ['testing'], concat); // array of aliases
+
+            out = resolver.resolve(data);
+
+            assert.strictEqual(out.http, 'http');
+            assert.strictEqual(out.https, 'https');
+            assert.strictEqual(out.chain, 'http https');
+            assert.strictEqual(out.file, 'testing');
+            assert.strictEqual(out.chainAlias, 'https testing');
         });
 
     });

@@ -98,6 +98,28 @@ data = resolver.resolve(json);
 // }
 ```
 
+#### Protocol filters for Handlers
+
+When registering a handler for a protocol, a regular expression can be passed also as an argument. This will override the default expression (`^(protocol):`) used to determine if value matches a given protocol.
+
+Equally an array of aliases can be passed instead.
+
+```
+resolver.use('file', '^(file|fileSync):', fileHandler);
+resolver.use('http', '^(https?):', httpHandler);
+resolver.use('http', ['alias'], httpHandler);
+
+json = {
+
+    file: 'file:some/path/to/a/file',           // matches file protocol
+    fileSync: 'fileSync:some/path/to/a/file',   // matches file protocol
+
+    http: 'http://www.domain.com',              // matches http protocol
+    https: 'https://www.domain.com'             // matches http protocol
+    alias: 'alias://www.domain.com'             // matches http protocol    
+
+}
+```
 
 #### Removing Handlers
 
