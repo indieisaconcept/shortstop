@@ -29,5 +29,8 @@
   "devDependencies": {
     "mocha": "~1.13.0",
     "chai": "~1.8.0"
+  },
+  "dependencies": {
+    "core-util-is": "~1.0.0"
   }
 }
